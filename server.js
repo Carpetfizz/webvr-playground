@@ -13,23 +13,26 @@ var rooms = [];
 var bitly = new Bitly('e7d67277347e7c7b79b591cafa422a22e9a380fb');
 
 app.get('/', function (req, res) {
-	res.render('index')
-});
-
-app.get('/play', function(req, res) {
+	res.render('index');
 	var room = shortid.generate();
-	bitly.shorten('https://'+req.headers.host+'/lightsaber/'+room). then(function(response){
+	bitly.shorten('https://'+req.headers.host+'/gamepad/'+room). then(function(response){
 		res.render('viewer', {room: room, roomURL: response.data.url});
 	}, function(error){
 		throw error;
 	});
 	rooms.push(room);
-})
-
-//TODO REMOVE
-app.get('/lightsaber/:roomId', function (req, res){
-	res.render('lightsaber', {room: req.params.roomId});
 });
+
+//renders the VR
+app.get('/viewer/:roomId', function (req, res){
+	res.render('viewer', {room: req.params.roomId});
+});
+
+//renders the gamepad
+app.get('/gamepad/:roomId', function (req, res){
+	res.render('gamepad', {room: req.params.roomId});
+});
+
 
 var port = process.env.PORT || 3000;
 server.listen(port, function(req, res){
@@ -64,19 +67,19 @@ io.on('connection', function (socket) {
 		console.log("Viewer joined: "+socket.room);
 	});
 
-	socket.on('lightsaberjoin', function(data){
+	socket.on('gamepadjoin', function(data){
 		socket.room = data.room;
 		socket.join(socket.room);
 
 		io.sockets.in(socket.room).emit('beginsetup');
 
-		console.log("Lightsaber joined: "+socket.room);
+		console.log("Gamepad joined: "+socket.room);
 	});
 
 	socket.on('setupcomplete', function(data){
 		socket.broadcast.to(socket.room).emit('setupcomplete');
 
-		console.log("Lightsaber setup complete: "+socket.room);
+		console.log("WebVR setup complete: "+socket.room);
 	});
 
 	socket.on('viewready', function(data){
@@ -85,12 +88,10 @@ io.on('connection', function (socket) {
 		console.log("View ready: "+socket.room);
 	});
 
-	socket.on('sendorientation', function(data){
-		socket.broadcast.to(socket.room).emit('updateorientation',data);
+	//TODO
+	socket.on('sendData', function(data){
+		socket.broadcast.to(socket.room).emit('dataParser',data);
 	});
 
-	socket.on('sendhit', function(data){
-		socket.broadcast.to(socket.room).emit('playsound', data);
-	});
 
 });
