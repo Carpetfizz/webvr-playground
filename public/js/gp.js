@@ -49,7 +49,7 @@ function updateStatus() {
 
     for (var i=0; i<controller.axes.length; i++) {
         const axesVal = controller.axes[1].toFixed(3);
-        // cb({"type": "axes", "name": axesMap[i], "val": axesVal});
+        cb({"type": "axes", "name": axesMap[i], "val": axesVal});
     }
   }
   rAF(updateStatus);

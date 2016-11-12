@@ -1,5 +1,8 @@
 <html>
     <head>
+        <script src="libs/three-r79.min.js"></script>
+        <script src="libs/OrbitControls.js"></script>
+        <link rel="stylesheet" href="css/index.css"></link>
         <style>
             body {
             margin: 0px;
@@ -11,9 +14,22 @@
             const roomURL = "<%= roomURL %>";
         </script>
     </head>
-    <body>
+
+    <div id="container">
+
+        <div id="menu" class="menu menu-open">
+            <h1 id="inv">Inventories</h1>
+            <button id="menu-toggle">&lt&lt</button>
+        </div>
+
+        <div id="canvas-container">
+        </div>
+
         <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+        <script src="js/app.js"></script>
         <script src="js/gp.js"></script>
         <script src="js/editor.js"></script>
-    </body>
+
+    </div>
+  
 </html>
