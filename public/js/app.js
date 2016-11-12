@@ -1,7 +1,7 @@
 const canvas = document.getElementById("canvas-container");
 var raycaster = new THREE.Raycaster();
 var objects = [];
-var seletion = null;
+var selection = null;
 var offset = new THREE.Vector3();
 // Plane, that helps to determinate an intersection position
 var helper = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500, 8, 8), new THREE.MeshBasicMaterial({color: 0xffffff}));
@@ -102,7 +102,7 @@ function onDocumentMouseDown(event) {
 		selection = intersects[0].object;
 		// Calculate the offset
 		var intersects = raycaster.intersectObject(helper);
-		offset.copy(intersects[0].point).sub(helper.position);
+		offset.copy(selection.position).sub(helper.position);
 	}
 }
 
@@ -116,7 +116,7 @@ function onDocumentMouseMove(event) {
 	vector.unproject(camera);
 	// Set the raycaster position
 	raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
-	if (selection) {
+	if (selection != null) {
 		// Check the position where the plane is intersected
 		var intersects = raycaster.intersectObject(plane);
 		// Reposition the object based on the intersection point with the plane
