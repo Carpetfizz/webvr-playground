@@ -7,16 +7,17 @@ var Bitly = require('bitly');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
+app.use(express.static('assets/models'));
 app.set('views', __dirname + '/views');
 
 var rooms = [];
 var bitly = new Bitly('e7d67277347e7c7b79b591cafa422a22e9a380fb');
 
+//renders editor and creates a room
 app.get('/', function (req, res) {
-	res.render('index');
 	var room = shortid.generate();
 	bitly.shorten('https://'+req.headers.host+'/gamepad/'+room). then(function(response){
-		res.render('viewer', {room: room, roomURL: response.data.url});
+		res.render('index'/*, {room: room, roomURL: response.data.url}*/);
 	}, function(error){
 		throw error;
 	});
