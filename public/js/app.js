@@ -9,6 +9,7 @@ helper.visible = false;
 
 
 var scene = new THREE.Scene();
+scene.background = new THREE.Color(0xadd8e6);
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
 var renderer = new THREE.WebGLRenderer();
@@ -23,19 +24,24 @@ var box1_geometry = new THREE.BoxGeometry( 2, 1, 1 );
 var box1_material = new THREE.MeshBasicMaterial( { color: 0x01fde0 } );
 var cube1 = new THREE.Mesh( box1_geometry, box1_material );
 
-var geometry = new THREE.PlaneGeometry( 10, 10, 10 );
-var material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+var geometry = new THREE.PlaneGeometry( 100, 100, 100 );
+var texture = new THREE.TextureLoader().load("textures/cube1.jpg");
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+texture.repeat.set(10, 10);
+var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
 var plane = new THREE.Mesh( geometry, material );
 
 scene.add(helper);
 scene.add(plane);
 displayObject(cube);
 displayObject(cube1);
-camera.position.z = 20;
-camera.position.x = 2;
+camera.position.z = 10;
+camera.position.y = -30;
+camera.lookAt(scene.position);
 
-controls = new THREE.OrbitControls(camera, renderer.domElement);
-controls.addEventListener( 'change', render );
+// controls = new THREE.OrbitControls(camera, renderer.domElement);
+// controls.addEventListener( 'change', render );
 
 
 
@@ -91,7 +97,7 @@ function onDocumentMouseDown(event) {
 	var intersects = raycaster.intersectObjects(objects);
 	if (intersects.length > 0) {
 		// Disable the controls
-		controls.enabled = false;
+		// controls.enabled = false;
 		// Set the selection - first intersected object
 		selection = intersects[0].object;
 		// Calculate the offset
@@ -129,18 +135,18 @@ function onDocumentMouseMove(event) {
 
 function onDocumentMouseUp(event) {
 	// Enable the controls
-	controls.enabled = true;
+	// controls.enabled = true;
 	selection = null;
 }
 
 render();
 
-function animate() {
+/*function animate() {
 
   requestAnimationFrame( animate );
   controls.update();
 
-}
+}*/
 
 
 
