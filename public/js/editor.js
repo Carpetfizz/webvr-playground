@@ -17,6 +17,7 @@ var camup = 0;
 var camrotright = 0;
 var sizeUp = false;
 var sizeDown = false;
+var sender = null;
 // Plane, that helps to determinate an intersection position
 var helper = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500, 8, 8), new THREE.MeshBasicMaterial({color: 0xffffff}));
 helper.visible = false;
@@ -120,6 +121,37 @@ function removeObjectByID(id) {
 function removeObject(object) {
 	objects.splice(objects.indexOf(object), 1);
 	scene.remove(object);
+}
+
+function initsender(s) {
+	sender = s;
+}
+
+function sendScene() {
+
+	var smallObjects = [];
+
+	for (var i = 0; i < objects.length; i++) {
+		object = objects[i];
+		var o = {
+			type: object.geometry.type,
+			position: [object.position.x, object.position.y, object.position.z],
+			quaternion: [object.quaternion.x, object.quaternion.y, object.position.z],
+			scale: [object.scale.x, object.scale.y, object.scale.z]
+		}
+		smallObjects.push(o);
+	}
+
+	console.log(smallObjects);
+
+	$.ajax({
+	    type: "POST",
+	    url: "/save",
+	    // The key needs to match your method's input parameter (case-sensitive).
+	    data: {objects: smallObjects},
+	    dataType: "json"
+	});
+
 }
 
 var render = function () {
