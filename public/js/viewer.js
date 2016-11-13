@@ -18,6 +18,11 @@ wtexture.wrapS = THREE.RepeatWrapping;
 wtexture.wrapT = THREE.RepeatWrapping;
 var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
 
+var sky_texture = new THREE.TextureLoader().load("/textures/sky.png");
+sky_texture.wrapS = THREE.RepeatWrapping;
+sky_texture.wrapT = THREE.RepeatWrapping;
+
+
 function setupGamepad(cb) {
     var roomId = document.location.href.substring(document.location.href.lastIndexOf( '/' )+1);
 
@@ -42,7 +47,7 @@ function setupScene() {
     canvas = document.getElementById("canvas-container");
     objects = [];
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xadd8e6);
+    scene.background = sky_texture;
     camera = new THREE.PerspectiveCamera(90, window.innerWidth/window.innerHeight, 0.001, 20000);
     renderer = new THREE.WebGLRenderer();
     stereo = new THREE.StereoEffect(renderer);
@@ -126,7 +131,7 @@ function setupObjects() {
             if (o.type == "BoxGeometry") {
                 var box = new THREE.BoxGeometry(o.scale[0]*3, o.scale[1]*3, o.scale[2]*3);
                 var object = new THREE.Mesh(box, w_material);
-                object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
+                // object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
                 object.position.set(o.position[0], o.position[2], o.position[1]);
                 displayObject(object);
             } else if (o.type == "CylinderGeometry") {
@@ -139,7 +144,7 @@ function setupObjects() {
             } else if (o.type == "SphereGeometry") {
                 var box = new THREE.SphereGeometry(o.scale[0]*2, 32, 32);
                 var object = new THREE.Mesh(box, w_material);
-                object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
+                // object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
                 object.position.set(o.position[0], o.position[2], o.position[1]);
                 displayObject(object);
             } /*else {
