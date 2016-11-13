@@ -136,7 +136,7 @@ function sendScene() {
 		var o = {
 			type: object.geometry.type,
 			position: [object.position.x, object.position.y, object.position.z],
-			quaternion: [object.quaternion.x, object.quaternion.y, object.position.z],
+			quaternion: [object.quaternion.x, object.quaternion.y, object.quaternion.z, object.quaternion.w],
 			scale: [object.scale.x, object.scale.y, object.scale.z]
 		}
 		smallObjects.push(o);

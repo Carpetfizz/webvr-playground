@@ -5,6 +5,7 @@ initgp(input);
 io.emit('editorjoin', {room: roomId});
 
 function input(i) {
+    console.log(i);
     io.emit('sendinput', {input: i});
 }
 
