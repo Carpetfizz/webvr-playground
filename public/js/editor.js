@@ -4,6 +4,10 @@ var objects = [];
 var selection = null;
 var offset = new THREE.Vector3();
 var modify = null;
+var moveUp = false;
+var moveDown = false;
+var sizeUp = false;
+var sizeDown = false;
 // Plane, that helps to determinate an intersection position
 var helper = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500, 8, 8), new THREE.MeshBasicMaterial({color: 0xffffff}));
 helper.visible = false;
@@ -22,6 +26,7 @@ wtexture.wrapS = THREE.RepeatWrapping;
 wtexture.wrapT = THREE.RepeatWrapping;
 //wtexture.repeat.set(10, 10);
 var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
+var green_material = new THREE.MeshBasicMaterial( { color: 0x00ff7f } );
 
 var create_objects = [
 	function() {
@@ -31,35 +36,26 @@ var create_objects = [
 	},
 
 	function() {
-		let geometry = new THREE.CylinderGeometry( 3, 3, 6, 32 );
+		let geometry = new THREE.CylinderGeometry( 2, 2, 4, 32 );
 		let obj = new THREE.Mesh(geometry, w_material);
-		//obj.rotation.y += (Math.pi/2);
+		obj.translateZ(obj.geometry.parameters.height/2);
+		obj.rotateX(Math.PI/2);
 		return obj;
 	},
 
 	function() {
-		let geometry = new THREE.BoxGeometry(10, 10, 10);
+		let geometry = new THREE.SphereGeometry( 2, 32, 32 );
 		let obj = new THREE.Mesh(geometry, w_material);
+		obj.translateZ(obj.geometry.parameters.radius);
 		return obj;
 	},
 
 	function() {
-		let geometry = new THREE.BoxGeometry(10, 10, 10);
+		let geometry = new THREE.ConeGeometry( 2, 4, 32 );
 		let obj = new THREE.Mesh(geometry, w_material);
+		obj.rotateX(Math.PI/2);
 		return obj;
-	},
-
-	function() {
-		let geometry = new THREE.BoxGeometry(10, 10, 10);
-		let obj = new THREE.Mesh(geometry, w_material);
-		return obj;
-	},
-
-	function() {
-		let geometry = new THREE.BoxGeometry(10, 10, 10);
-		let obj = new THREE.Mesh(geometry, w_material);
-		return obj;
-	},
+	}
 ];
 
 /*
@@ -115,6 +111,20 @@ function removeObject(object) {
 }
 
 var render = function () {
+	if (modify) {
+		if (moveUp) {
+			modify.position.z += 0.05;
+		}
+		if (moveDown) {
+			modify.position.z -= 0.05;
+		}
+		if (sizeUp) {
+
+		}
+		if (sizeDown) {
+
+		}
+	}
 	requestAnimationFrame( render );
     renderer.render(scene, camera);
 };
@@ -136,14 +146,36 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-/*
+
 window.addEventListener( 'dblclick', onWindowDblclick, false );
 
 function onWindowDblclick() {
-	camera.position.z -= 1;
+	clear_modify();
+	// Get mouse position
+	var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+	var mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+	// Get 3D vector from 3D mouse position using 'unproject' function
+	var vector = new THREE.Vector3(mouseX, mouseY, 1);
+	vector.unproject(camera);
+	// Set the raycaster position
+	raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
+	// Find all intersected objects
+	var intersects = raycaster.intersectObjects(objects);
+	if (intersects.length > 0 && intersects[0]) {
+		// Set the modify - first intersected object
+		modify = intersects[0].object;
+		// Calculate the offset
+		// console.log(intersects[0]);
+		modify.material = green_material;
+	}
 }
-*/
 
+function clear_modify() {
+	if (modify) {
+		modify.material = w_material;
+		modify = null;
+	}
+}
 
 canvas.addEventListener('mousedown', this.onDocumentMouseDown, false);
 canvas.addEventListener('mousemove', this.onDocumentMouseMove, false);
@@ -204,6 +236,46 @@ function onDocumentMouseUp(event) {
 	controls.enabled = true;
 	selection = null;
 }
+
+window.addEventListener("keydown",keyDownHandler, false);	
+window.addEventListener("keyup",keyUpHandler, false);
+
+function keyDownHandler() {
+	controls.enabled = false;
+	switch (event.keyCode) {
+		case 38:
+			moveUp = true;
+			break;
+		case 40:
+			moveDown = true;
+			break;
+		case 90:
+			sizeDown = true;
+			break;
+		case 88:
+			sizeUp = true;
+			break;
+	}
+}
+
+function keyUpHandler() {
+	controls.enabled = false;
+	switch (event.keyCode) {
+		case 38:
+			moveUp = false;
+			break;
+		case 40:
+			moveDown = false;
+			break;
+		case 90:
+			sizeDown = false;
+			break;
+		case 88:
+			sizeUp = false;
+			break;
+	}
+}
+
 /*
 function zoomout() {
 	camera.position.z += 1;
