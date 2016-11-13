@@ -44,7 +44,6 @@ function setupScene() {
     stereo = new THREE.StereoEffect(renderer);
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.getElementById("canvas-container").appendChild( renderer.domElement );
-    renderer.domElement.addEventListener('click', fullscreen, false);
 
 
     /* BUILD OBJECTS */
@@ -62,7 +61,7 @@ function setupScene() {
     texture.repeat.set(10, 10);
     var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
     var plane = new THREE.Mesh( geometry, material );
-    plane.rotation.x=-Math.PI/2;
+    plane.rotation.x = -Math.PI/2;
 
     /* SHOW OBJECTS */
     scene.add(helperPlane);
@@ -70,15 +69,19 @@ function setupScene() {
 
     displayObject(cube);
 
-    camera.lookAt(0,0,0);
     camera.position.set(0, 5, 0);
 }
 
 function setupOrientationControls() {
 
     window.addEventListener('deviceorientation', setOrientationControls, true);
-    controls = new THREE.DeviceOrientationControls(camera, renderer.domElement);
-    controls.connect();
+
+    if (isMobile) {
+        controls = new THREE.DeviceOrientationControls(camera, renderer.domElement);
+        controls.connect();
+    } else {
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+    }
     function setOrientationControls(e){
         if(!e.alpha){
             return;
@@ -90,37 +93,11 @@ function setupOrientationControls() {
     }
 }
 
-function setupRenderer() {
-    
-    var render = function () {
-	    requestAnimationFrame( render );
-        if(isMobile){
-            controls.update();
-            stereo.render(scene, camera);
-        } else {
-            renderer.render(scene, camera);
-        }
-    };
-
-    window.addEventListener( 'resize', onWindowResize, false );
-
-    function onWindowResize() {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-
-        stereo.setSize(window.innerWidth, window.innerHeight);
-        renderer.setSize( window.innerWidth, window.innerHeight );
-    }
-
-    render();
-}
-
 function displayObject(object) {
 	// display object json
+
 	objects.push(object);
-	scene.add(object);
-	object.translateZ(object.scale.z/2);
-    object.translateY(-20);
+	scene.add(object);  
 }
 
 function fullscreen() {
@@ -135,7 +112,52 @@ function fullscreen() {
   }
 }
 
+function setupObjects() {
+
+    $.get( "/objects", function( data ) {
+        var objects = data.objects;
+        
+        var wtexture = new THREE.TextureLoader().load("/textures/wood.jpg");
+        wtexture.wrapS = THREE.RepeatWrapping;
+        wtexture.wrapT = THREE.RepeatWrapping;
+        var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
+
+        for (var i = 0; i < objects.length; i++) {
+            var  o = objects[i];
+            var box = new THREE.BoxGeometry(o.scale[0], o.scale[1], o.scale[2]);
+            var object = new THREE.Mesh(box, w_material);
+            object.position.set(o.position[0], o.position[2], o.position[1]);
+            object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
+            displayObject(object);
+        }
+    });
+
+}
+
+
 setupScene();
+setupObjects();
 setupOrientationControls();
-setupRenderer();
 setupGamepad(updateCameraPosition);
+
+var render = function () {
+    requestAnimationFrame( render );
+    if(isMobile){
+        controls.update();
+        stereo.render(scene, camera);
+    } else {
+        renderer.render(scene, camera);
+    }
+};
+
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    stereo.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+render();
