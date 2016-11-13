@@ -27,22 +27,24 @@ function setupGamepad(cb) {
 
 function updateCameraPosition(input) {
     var mult = 0.12;
-    camera.position.x += input.x * mult;
-    camera.position.y -= input.z * mult;
+    camera.position.z -= input.x * mult;
+    camera.position.x += input.z * mult;
 }
 
 
 function setupScene() {
     
+    /* SETUP UTILS */
     canvas = document.getElementById("canvas-container");
     objects = [];
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xadd8e6);
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+    camera = new THREE.PerspectiveCamera(90, window.innerWidth/window.innerHeight, 0.001, 20000);
     renderer = new THREE.WebGLRenderer();
     stereo = new THREE.StereoEffect(renderer);
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.getElementById("canvas-container").appendChild( renderer.domElement );
+    renderer.domElement.addEventListener('click', fullscreen, false);
 
 
     /* BUILD OBJECTS */
@@ -60,6 +62,7 @@ function setupScene() {
     texture.repeat.set(10, 10);
     var material = new THREE.MeshBasicMaterial( {map: texture, side: THREE.DoubleSide} );
     var plane = new THREE.Mesh( geometry, material );
+    plane.rotation.x=-Math.PI/2;
 
     /* SHOW OBJECTS */
     scene.add(helperPlane);
@@ -67,9 +70,8 @@ function setupScene() {
 
     displayObject(cube);
 
-    camera.position.z = 10;
-    camera.position.y = -30;
-    camera.lookAt(scene.position);
+    camera.lookAt(0,0,0);
+    camera.position.set(0, 5, 0);
 }
 
 function setupOrientationControls() {
@@ -119,6 +121,18 @@ function displayObject(object) {
 	scene.add(object);
 	object.translateZ(object.scale.z/2);
     object.translateY(-20);
+}
+
+function fullscreen() {
+  if (container.requestFullscreen) {
+    container.requestFullscreen();
+  } else if (container.msRequestFullscreen) {
+    container.msRequestFullscreen();
+  } else if (container.mozRequestFullScreen) {
+    container.mozRequestFullScreen();
+  } else if (container.webkitRequestFullscreen) {
+    container.webkitRequestFullscreen();
+  }
 }
 
 setupScene();
