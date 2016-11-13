@@ -129,6 +129,8 @@ function initsender(s) {
 
 function sendScene() {
 
+	clear_modify();
+
 	var smallObjects = [];
 
 	for (var i = 0; i < objects.length; i++) {
