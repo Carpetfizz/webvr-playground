@@ -4,7 +4,6 @@ var roomId = document.location.href.substring(document.location.href.lastIndexOf
 io.emit('viewerjoin', {room: roomId});
 
 io.on('gameinput', function(input){
-    console.log(input);
     const mult = 0.12;
 	camera.position.x += input.x * mult;
     camera.position.y -= input.z * mult;
@@ -26,6 +25,7 @@ scene.background = new THREE.Color(0xadd8e6);
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
 var renderer = new THREE.WebGLRenderer();
+var stereo = new THREE.StereoEffect(renderer);
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.getElementById("canvas-container").appendChild( renderer.domElement );
 
@@ -63,7 +63,8 @@ function displayObject(object) {
 
 var render = function () {
 	requestAnimationFrame( render );
-    renderer.render(scene, camera);
+    // renderer.render(scene, camera);
+    stereo.render(scene, camera);
 };
 
 window.addEventListener( 'resize', onWindowResize, false );
@@ -73,6 +74,7 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
+    stereo.setSize(window.innerWidth, window.innerHeight);
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
