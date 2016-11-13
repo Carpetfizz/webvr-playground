@@ -1,20 +1,32 @@
 const canvas = document.getElementById("canvas-container");
+const mvspeed = 0.2;
+const rotspeed = 0.005;
+const sizechange = 0.008;
+
 var raycaster = new THREE.Raycaster();
 var objects = [];
 var selection = null;
 var offset = new THREE.Vector3();
 var modify = null;
-var moveUp = false;
-var moveDown = false;
+var moveUp = 0;
+var moveY = 0;
+var moveX = 0;
+var camfront = 0;
+var camright = 0;
+var camup = 0;
+var camrotright = 0;
 var sizeUp = false;
 var sizeDown = false;
 // Plane, that helps to determinate an intersection position
 var helper = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500, 8, 8), new THREE.MeshBasicMaterial({color: 0xffffff}));
 helper.visible = false;
 
+var sky_texture = new THREE.TextureLoader().load("textures/sky.png");
+sky_texture.wrapS = THREE.RepeatWrapping;
+sky_texture.wrapT = THREE.RepeatWrapping;
 
 var scene = new THREE.Scene();
-scene.background = new THREE.Color(0xadd8e6);
+scene.background = sky_texture; // new THREE.Color(0xadd8e6);
 var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
 
 var renderer = new THREE.WebGLRenderer();
@@ -26,7 +38,7 @@ wtexture.wrapS = THREE.RepeatWrapping;
 wtexture.wrapT = THREE.RepeatWrapping;
 //wtexture.repeat.set(10, 10);
 var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
-var green_material = new THREE.MeshBasicMaterial( { color: 0x00ff7f } );
+var green_material = new THREE.MeshBasicMaterial( { color: 0x00ff7f, map: wtexture } );
 
 var create_objects = [
 	function() {
@@ -80,8 +92,8 @@ scene.add(helper);
 scene.add(plane);
 // displayObject(cube);
 // displayObject(cube1);
-camera.position.z = 10;
-camera.position.y = -30;
+camera.position.z = 6;
+camera.position.y = -15;
 camera.lookAt(scene.position);
 
 controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -112,19 +124,17 @@ function removeObject(object) {
 
 var render = function () {
 	if (modify) {
-		if (moveUp) {
-			modify.position.z += 0.05;
-		}
-		if (moveDown) {
-			modify.position.z -= 0.05;
-		}
-		if (sizeUp) {
-
-		}
-		if (sizeDown) {
-
-		}
+		modify.position.z += moveUp * mvspeed;
+		modify.position.y += moveY * mvspeed;
+		modify.position.x += moveX * mvspeed;
+		modify.scale.x += sizeUp * sizechange;
+		modify.scale.y += sizeUp * sizechange;
+		modify.scale.z += sizeUp * sizechange;
 	}
+	camera.position.y += camfront * mvspeed;
+	camera.position.x += camright * mvspeed;
+	camera.position.z += camup * mvspeed;
+	camera.rotateY(-camrotright * rotspeed);
 	requestAnimationFrame( render );
     renderer.render(scene, camera);
 };
@@ -244,16 +254,58 @@ function keyDownHandler() {
 	controls.enabled = false;
 	switch (event.keyCode) {
 		case 38:
-			moveUp = true;
+			moveUp = 1;
 			break;
 		case 40:
-			moveDown = true;
+			moveUp = -1;
 			break;
 		case 90:
-			sizeDown = true;
+			sizeUp = -1;
 			break;
 		case 88:
-			sizeUp = true;
+			sizeUp = 1;
+			break;
+		case 87:
+			camfront = 1;
+			break;
+		case 83:
+			camfront = -1;
+			break;
+		case 68:
+			camright = 1;
+			break;
+		case 65:
+			camright = -1;
+			break;
+		case 81:
+			camrotright = -1;
+			break;
+		case 69:
+			camrotright = 1;
+			break;
+		case 79:
+			moveY = 1;
+			break;
+		case 75:
+			moveUp = -1;
+			break;
+		case 76:
+			moveX = 1;
+			break;
+		case 74:
+			moveX = -1;
+			break;
+		case 67:
+			camup = 1;
+			break;
+		case 86:
+			camup = -1;
+			break;
+		case 73:
+			moveUp = 1;
+			break;
+		case 85:
+			moveY = -1;
 			break;
 	}
 }
@@ -262,16 +314,58 @@ function keyUpHandler() {
 	controls.enabled = false;
 	switch (event.keyCode) {
 		case 38:
-			moveUp = false;
+			moveUp = 0;
 			break;
 		case 40:
-			moveDown = false;
+			moveUp = 0;
 			break;
 		case 90:
-			sizeDown = false;
+			sizeUp = 0;
 			break;
 		case 88:
-			sizeUp = false;
+			sizeUp = 0;
+			break;
+		case 87:
+			camfront = 0;
+			break;
+		case 83:
+			camfront = 0;
+			break;
+		case 68:
+			camright = 0;
+			break;
+		case 65:
+			camright = 0;
+			break;
+		case 81:
+			camrotright = 0;
+			break;
+		case 69:
+			camrotright = 0;
+			break;
+		case 79:
+			moveY = 0;
+			break;
+		case 75:
+			moveUp = 0;
+			break;
+		case 76:
+			moveX = 0;
+			break;
+		case 74:
+			moveX = 0;
+			break;
+		case 67:
+			camup = 0;
+			break;
+		case 86:
+			camup = 0;
+			break;
+		case 73:
+			moveUp = 0;
+			break;
+		case 85:
+			moveY = 0;
 			break;
 	}
 }
