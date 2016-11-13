@@ -3,6 +3,7 @@ var raycaster = new THREE.Raycaster();
 var objects = [];
 var selection = null;
 var offset = new THREE.Vector3();
+var modify = null;
 // Plane, that helps to determinate an intersection position
 var helper = new THREE.Mesh(new THREE.PlaneBufferGeometry(500, 500, 8, 8), new THREE.MeshBasicMaterial({color: 0xffffff}));
 helper.visible = false;
@@ -16,13 +17,60 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.getElementById("canvas-container").appendChild( renderer.domElement );
 
+var wtexture = new THREE.TextureLoader().load("textures/wood.jpg");
+wtexture.wrapS = THREE.RepeatWrapping;
+wtexture.wrapT = THREE.RepeatWrapping;
+//wtexture.repeat.set(10, 10);
+var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
+
+var create_objects = [
+	function() {
+		let geometry = new THREE.BoxGeometry(3, 3, 3);
+		let obj = new THREE.Mesh(geometry, w_material);
+		return obj;
+	},
+
+	function() {
+		let geometry = new THREE.CylinderGeometry( 3, 3, 6, 32 );
+		let obj = new THREE.Mesh(geometry, w_material);
+		//obj.rotation.y += (Math.pi/2);
+		return obj;
+	},
+
+	function() {
+		let geometry = new THREE.BoxGeometry(10, 10, 10);
+		let obj = new THREE.Mesh(geometry, w_material);
+		return obj;
+	},
+
+	function() {
+		let geometry = new THREE.BoxGeometry(10, 10, 10);
+		let obj = new THREE.Mesh(geometry, w_material);
+		return obj;
+	},
+
+	function() {
+		let geometry = new THREE.BoxGeometry(10, 10, 10);
+		let obj = new THREE.Mesh(geometry, w_material);
+		return obj;
+	},
+
+	function() {
+		let geometry = new THREE.BoxGeometry(10, 10, 10);
+		let obj = new THREE.Mesh(geometry, w_material);
+		return obj;
+	},
+];
+
+/*
 var box_geometry = new THREE.BoxGeometry( 1, 1, 1 );
-var box_material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+var box_material = new THREE.MeshBasicMaterial( { map: wtexture } );
 var cube = new THREE.Mesh( box_geometry, box_material );
 
 var box1_geometry = new THREE.BoxGeometry( 2, 1, 1 );
-var box1_material = new THREE.MeshBasicMaterial( { color: 0x01fde0 } );
+var box1_material = new THREE.MeshBasicMaterial( { map: wtexture} );
 var cube1 = new THREE.Mesh( box1_geometry, box1_material );
+*/
 
 var geometry = new THREE.PlaneGeometry( 100, 100, 100 );
 var texture = new THREE.TextureLoader().load("textures/cube1.jpg");
@@ -34,33 +82,49 @@ var plane = new THREE.Mesh( geometry, material );
 
 scene.add(helper);
 scene.add(plane);
-displayObject(cube);
-displayObject(cube1);
+// displayObject(cube);
+// displayObject(cube1);
 camera.position.z = 10;
 camera.position.y = -30;
 camera.lookAt(scene.position);
 
-// controls = new THREE.OrbitControls(camera, renderer.domElement);
-// controls.addEventListener( 'change', render );
+controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.addEventListener( 'change', render );
 
 
 
-function displayObjectById(id) {
+function displayObjectByID(id) {
 	// get object json based on id and calls displayObject
-	
+	displayObject(create_objects[id]());
 }
 
 function displayObject(object) {
 	// display object json
+	object.translateZ(object.geometry.parameters.height/2);
 	objects.push(object);
 	scene.add(object);
-	object.translateZ(object.scale.z/2);
+}
+
+function removeObjectByID(id) {
+	// removeObject(cube);
+}
+
+function removeObject(object) {
+	objects.splice(objects.indexOf(object), 1);
+	scene.remove(object);
 }
 
 var render = function () {
 	requestAnimationFrame( render );
     renderer.render(scene, camera);
 };
+
+function animate() {
+	requestAnimationFrame(animate);
+	render();
+	update();
+}
+
 
 window.addEventListener( 'resize', onWindowResize, false );
 
@@ -72,12 +136,13 @@ function onWindowResize() {
     renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
-
+/*
 window.addEventListener( 'dblclick', onWindowDblclick, false );
 
 function onWindowDblclick() {
 	camera.position.z -= 1;
 }
+*/
 
 
 canvas.addEventListener('mousedown', this.onDocumentMouseDown, false);
@@ -95,14 +160,15 @@ function onDocumentMouseDown(event) {
 	raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
 	// Find all intersected objects
 	var intersects = raycaster.intersectObjects(objects);
-	if (intersects.length > 0) {
+	if (intersects.length > 0 && intersects[0]) {
 		// Disable the controls
-		// controls.enabled = false;
+		controls.enabled = false;
 		// Set the selection - first intersected object
 		selection = intersects[0].object;
 		// Calculate the offset
+		// console.log(intersects[0]);
 		var intersects = raycaster.intersectObject(helper);
-		offset.copy(selection.position).sub(helper.position);
+		offset.copy(intersects[0].point).sub(helper.position);
 	}
 }
 
@@ -135,8 +201,19 @@ function onDocumentMouseMove(event) {
 
 function onDocumentMouseUp(event) {
 	// Enable the controls
-	// controls.enabled = true;
+	controls.enabled = true;
 	selection = null;
 }
+/*
+function zoomout() {
+	camera.position.z += 1;
+	camera.position.y -= 3;
+}
+
+function zoomin() {
+	camera.position.z -= 1;
+	camera.position.y += 3;
+}
+*/
 
 render();

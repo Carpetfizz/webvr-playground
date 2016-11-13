@@ -10,26 +10,17 @@ function input(i) {
 
 const menuToggle = document.getElementById("menu-toggle");
 const menu = document.getElementById("menu");
+const zmin = document.getElementById("zoomin");
+const zmout = document.getElementById("zoomout");
 let menuOpen = true;
 
-let inventorylst = [
-  {name: "Apple", id: "apple"},
-  {name: "Banana", id: "apple"},
-  {name: "Cat", id: "apple"},
-  {name: "Denny", id: "apple"},
-  {name: "Egg", id: "apple"},
-  {name: "Fruit", id: "apple"}
-];
 
-for (let inv of inventorylst) {
-  let btn = document.createElement("BUTTON");
-  let text = document.createTextNode(inv.name);
-  btn.appendChild(text);
-  // btn.onclick = displayObject(inv.object);
-  btn.className = "init_button";
-  menu.appendChild(btn);
-}
+function showObjectByID(i) {
+  displayObjectByID(i);
+};
 
+// zmin.onclick = zoomin;
+// zmout.onclick = zoomout;
 
 menuToggle.onclick = function() {
   const openClass = "menu menu-open";
