@@ -44,7 +44,6 @@ function setupScene() {
     stereo = new THREE.StereoEffect(renderer);
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.getElementById("canvas-container").appendChild( renderer.domElement );
-    renderer.domElement.addEventListener('click', fullscreen, false);
 
 
     /* BUILD OBJECTS */
@@ -135,7 +134,45 @@ function fullscreen() {
   }
 }
 
+function setupObjects() {
+    /* 
+
+        var o = {
+			type: object.geometry.type,
+			position: [object.position.x, object.position.y, object.position.z],
+			quaternion: [object.quaternion.x, object.quaternion.y, object.position.z],
+			scale: [object.scale.x, object.scale.y, object.scale.z]
+		}
+
+        - BoxGeometry
+        let geometry = new THREE.BoxGeometry(3, 3, 3);
+		let obj = new THREE.Mesh(geometry, w_material);
+
+        var wtexture = new THREE.TextureLoader().load("textures/wood.jpg");
+wtexture.wrapS = THREE.RepeatWrapping;
+wtexture.wrapT = THREE.RepeatWrapping;
+//wtexture.repeat.set(10, 10);
+var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
+    */
+
+    var wtexture = new THREE.TextureLoader().load("textures/wood.jpg");
+    wtexture.wrapS = THREE.RepeatWrapping;
+    wtexture.wrapT = THREE.RepeatWrapping;
+    var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
+
+    for (var i = 0; i < objects.length; i++) {
+        var  o = objects[i];
+        var box = new THREE.BoxGeometry(o.scale[0], o.scale[1], o.scale[2]);
+        var object = new THREE.Mesh(box, w_material);
+        object.position = new THREE.Vector3(o.position[0], o.position[1], o.position[2]);
+        displayObject(object);
+    }
+}
+
+
+
 setupScene();
+setupObjects();
 setupOrientationControls();
 setupRenderer();
 setupGamepad(updateCameraPosition);

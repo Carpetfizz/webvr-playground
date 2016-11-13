@@ -1,6 +1,8 @@
 <html>
     <head>
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="/libs/three-r79.min.js"></script>
         <script src="/libs/DeviceOrientationControls.js"></script>
         <script src="/libs/StereoEffect.js"></script>
@@ -22,11 +24,32 @@
                 height: 100%;
                 position: relative;
             }
+            #startText {
+                font-style: Helvetica;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                -webkit-animation: fadi 10s 1;
+                -moz-animation: fadi 10s 1;
+            }
+            @-webkit-keyframes fadi {
+                0%   { opacity: 1; }
+                100% { opacity: 0; }
+            }
+            @-moz-keyframes fadi {
+                0%   { opacity: 1; }
+                100% { opacity: 0; }
+            }
+
         </style>
     </head>
     <body>
         <div id="container">
 
+            <div id="startText">
+                <h1>Look Around to find the blue cube</h1>
+            </div>
             <div id="canvas-container">
             </div>
 
