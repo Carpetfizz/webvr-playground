@@ -5,7 +5,9 @@ io.emit('viewerjoin', {room: roomId});
 
 io.on('gameinput', function(input){
     console.log(input);
-		
+    const mult = 0.12;
+	camera.position.x += input.x * mult;
+    camera.position.y -= input.z * mult;
 });
 
 
