@@ -13,6 +13,10 @@ if (/Mobi/.test(navigator.userAgent)) {
     isMobile = true;
 }
 
+var wtexture = new THREE.TextureLoader().load("/textures/wood.jpg");
+wtexture.wrapS = THREE.RepeatWrapping;
+wtexture.wrapT = THREE.RepeatWrapping;
+var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
 
 function setupGamepad(cb) {
     var roomId = document.location.href.substring(document.location.href.lastIndexOf( '/' )+1);
@@ -67,7 +71,7 @@ function setupScene() {
     scene.add(helperPlane);
     scene.add(plane);
 
-    displayObject(cube);
+    // displayObject(cube);
 
     camera.position.set(0, 5, 0);
 }
@@ -116,19 +120,36 @@ function setupObjects() {
 
     $.get( "/objects", function( data ) {
         var objects = data.objects;
-        
-        var wtexture = new THREE.TextureLoader().load("/textures/wood.jpg");
-        wtexture.wrapS = THREE.RepeatWrapping;
-        wtexture.wrapT = THREE.RepeatWrapping;
-        var w_material = new THREE.MeshBasicMaterial( { map: wtexture } );
 
         for (var i = 0; i < objects.length; i++) {
             var  o = objects[i];
-            var box = new THREE.BoxGeometry(o.scale[0], o.scale[1], o.scale[2]);
-            var object = new THREE.Mesh(box, w_material);
-            object.position.set(o.position[0], o.position[2], o.position[1]);
-            object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
-            displayObject(object);
+            if (o.type == "BoxGeometry") {
+                var box = new THREE.BoxGeometry(o.scale[0]*3, o.scale[1]*3, o.scale[2]*3);
+                var object = new THREE.Mesh(box, w_material);
+                object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
+                object.position.set(o.position[0], o.position[2], o.position[1]);
+                displayObject(object);
+            } else if (o.type == "CylinderGeometry") {
+                var box = new THREE.CylinderGeometry(o.scale[1]*2, o.scale[1]*2, o.scale[1]*4, 32);
+                var object = new THREE.Mesh(box, w_material);
+                object.rotateY(Math.PI/2);
+                // object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
+                object.position.set(o.position[0], o.position[2], o.position[1]);
+                displayObject(object);
+            } else if (o.type == "SphereGeometry") {
+                var box = new THREE.SphereGeometry(o.scale[0]*2, 32, 32);
+                var object = new THREE.Mesh(box, w_material);
+                object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
+                object.position.set(o.position[0], o.position[2], o.position[1]);
+                displayObject(object);
+            } /*else {
+                var box = new THREE.ConeGeometry(o.scale[0]*2, o.scale[0]*2, o.scale[0]*4, 32);
+                var object = new THREE.Mesh(box, w_material);
+                object.rotateY(Math.PI/2);
+                object.quaternion.set(1, o.quaternion[0], o.quaternion[1], o.quaternion[2]);
+                object.position.set(o.position[0], o.position[2], o.position[1]);
+                displayObject(object);
+            }*/
         }
     });
 

@@ -119,6 +119,7 @@ function removeObjectByID(id) {
 }
 
 function removeObject(object) {
+	clear_modify();
 	objects.splice(objects.indexOf(object), 1);
 	scene.remove(object);
 }
@@ -340,6 +341,9 @@ function keyDownHandler() {
 			break;
 		case 85:
 			moveY = -1;
+			break;
+		case 46:
+			removeObject(modify);
 			break;
 	}
 }
