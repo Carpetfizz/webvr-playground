@@ -3,14 +3,19 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var shortid = require('shortid');
+var bodyParser = require('body-parser');
 var Bitly = require('bitly');
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.static('assets/models'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.set('views', __dirname + '/views');
 
 var rooms = [];
+var objects = [];
 var bitly = new Bitly('e7d67277347e7c7b79b591cafa422a22e9a380fb');
 
 //renders editor and creates a room
@@ -27,6 +32,17 @@ app.get('/', function (req, res) {
 	// });
 	res.render('editor', {room: room, roomURL: debugURL});
 	rooms.push(room);
+});
+
+app.post('/save', function(req, res) {
+	console.log(req.body.objects);
+	objects = req.body.objects;
+	console.log(objects)
+});
+
+app.get('/objects', function(req, res) {
+	console.log(objects);
+	res.json({objects: objects}); 	
 });
 
 //renders the VR
@@ -77,8 +93,10 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('sendscene', function(data) {
-		socket.broadcast.to(socket.room).emit('sceneready', data.scene);
-		console.log("Sent scene from editor to: "+socket.room);
+		console.log("heloo wasd	")
+		console.log(data.scene);
+		// socket.broadcast.to(socket.room).emit('sceneready', data.scene);
+		// 	console.log("Sent scene from editor to: "+socket.room);
 	});
 
 	socket.on('sendinput', function(data) {
