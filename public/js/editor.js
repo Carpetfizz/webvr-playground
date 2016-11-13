@@ -1,11 +1,17 @@
 const canvas = document.getElementById("canvas-container");
+const mvspeed = 0.1;
+const rotspeed = 0.005;
+const sizechange = 0.008;
+
 var raycaster = new THREE.Raycaster();
 var objects = [];
 var selection = null;
 var offset = new THREE.Vector3();
 var modify = null;
-var moveUp = false;
-var moveDown = false;
+var moveUp = 0;
+var camfront = 0;
+var camright = 0;
+var camrotright = 0;
 var sizeUp = false;
 var sizeDown = false;
 // Plane, that helps to determinate an intersection position
@@ -112,19 +118,14 @@ function removeObject(object) {
 
 var render = function () {
 	if (modify) {
-		if (moveUp) {
-			modify.position.z += 0.05;
-		}
-		if (moveDown) {
-			modify.position.z -= 0.05;
-		}
-		if (sizeUp) {
-
-		}
-		if (sizeDown) {
-
-		}
+		modify.position.z += moveUp * mvspeed;
+		modify.scale.x += sizeUp * sizechange;
+		modify.scale.y += sizeUp * sizechange;
+		modify.scale.z += sizeUp * sizechange;
 	}
+	camera.position.y += camfront * mvspeed;
+	camera.position.x += camright * mvspeed;
+	camera.rotateY(-camrotright * rotspeed);
 	requestAnimationFrame( render );
     renderer.render(scene, camera);
 };
@@ -244,16 +245,34 @@ function keyDownHandler() {
 	controls.enabled = false;
 	switch (event.keyCode) {
 		case 38:
-			moveUp = true;
+			moveUp = 1;
 			break;
 		case 40:
-			moveDown = true;
+			moveUp = -1;
 			break;
 		case 90:
-			sizeDown = true;
+			sizeUp = -1;
 			break;
 		case 88:
-			sizeUp = true;
+			sizeUp = 1;
+			break;
+		case 87:
+			camfront = 1;
+			break;
+		case 83:
+			camfront = -1;
+			break;
+		case 68:
+			camright = 1;
+			break;
+		case 65:
+			camright = -1;
+			break;
+		case 81:
+			camrotright = -1;
+			break;
+		case 69:
+			camrotright = 1;
 			break;
 	}
 }
@@ -262,16 +281,34 @@ function keyUpHandler() {
 	controls.enabled = false;
 	switch (event.keyCode) {
 		case 38:
-			moveUp = false;
+			moveUp = 0;
 			break;
 		case 40:
-			moveDown = false;
+			moveUp = 0;
 			break;
 		case 90:
-			sizeDown = false;
+			sizeUp = 0;
 			break;
 		case 88:
-			sizeUp = false;
+			sizeUp = 0;
+			break;
+		case 87:
+			camfront = 0;
+			break;
+		case 83:
+			camfront = 0;
+			break;
+		case 68:
+			camright = 0;
+			break;
+		case 65:
+			camright = 0;
+			break;
+		case 81:
+			camrotright = 0;
+			break;
+		case 69:
+			camrotright = 0;
 			break;
 	}
 }
